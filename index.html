@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroImage Pro - AI Image Processor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="cyberpunk-bg">
+    <div class="grid-overlay"></div>
+    <div class="floating-particles"></div>
+    <div class="neural-network"></div>
+</div>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text">NeuroImage Pro</span>
+        </div>
+        <div class="nav-status">
+            <span class="status-dot"></span>
+            <span class="status-text">AI Ready</span>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Container -->
+<div class="main-wrapper">
+    <!-- Left Panel - Controls -->
+    <div class="control-panel">
+        <div class="panel-header">
+            <h2>Image Processor</h2>
+            <div class="header-line"></div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-zone">
+            <div class="upload-box" id="uploadBox">
+                <svg class="upload-icon" viewBox="0 0 24 24">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                <p class="upload-text">Drop Image Here</p>
+                <p class="upload-subtext">or click to select</p>
+                <input type="file" id="imageInput" accept="image/*" hidden>
+            </div>
+            <p class="upload-hint">Supports: JPG, PNG, WebP, GIF (Max 50MB)</p>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-container">
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="label-icon">📐</span>
+                    Width (px)
+                </label>
+                <input type="number" id="widthInput" class="control-input" placeholder="0" disabled>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="label-icon">📏</span>
+                    Height (px)
+                </label>
+                <input type="number" id="heightInput" class="control-input" placeholder="0" disabled>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="label-icon">💎</span>
+                    Quality: <span id="qualityValue" class="quality-val">85</span>%
+                </label>
+                <input type="range" id="qualitySlider" class="quality-slider" min="10" max="100" value="85" disabled>
+                <div class="quality-markers">
+                    <span>Low</span>
+                    <span>Medium</span>
+                    <span>High</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <span class="label-icon">🎨</span>
+                    Format
+                </label>
+                <select id="formatSelect" class="control-select" disabled>
+                    <option value="jpeg">JPEG (Best for photos)</option>
+                    <option value="png">PNG (Lossless)</option>
+                    <option value="webp">WebP (Modern)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="btn btn-primary" id="processBtn" onclick="processImage()" disabled>
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">Process & Compress</span>
+                <span class="btn-glow"></span>
+            </button>
+            <button class="btn btn-secondary" onclick="resetAll()">
+                <span class="btn-icon">🔄</span>
+                <span class="btn-text">Reset</span>
+            </button>
+        </div>
+
+        <!-- Download Button -->
+        <button class="btn btn-download" id="downloadBtn" onclick="downloadImage()" disabled>
+            <span class="btn-icon">📥</span>
+            <span class="btn-text">Download Compressed</span>
+            <span class="btn-glow"></span>
+        </button>
+    </div>
+
+    <!-- Right Panel - Preview & Data -->
+    <div class="preview-panel">
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <div class="preview-header">
+                <h3>Preview</h3>
+                <div class="preview-tabs">
+                    <button class="tab-btn active" onclick="switchTab('original')">Original</button>
+                    <button class="tab-btn" onclick="switchTab('compressed')">Compressed</button>
+                </div>
+            </div>
+
+            <div class="preview-container">
+                <div class="preview-box" id="originalPreview">
+                    <div class="empty-state">
+                        <span class="empty-icon">🖼️</span>
+                        <p>No image loaded</p>
+                    </div>
+                </div>
+                <div class="preview-box hidden" id="compressedPreview">
+                    <div class="empty-state">
+                        <span class="empty-icon">✨</span>
+                        <p>Compressed image preview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stats-header">
+                <h3>Statistics</h3>
+                <span class="stats-icon">📊</span>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Original Size</div>
+                    <div class="stat-value" id="originalSizeStat">0 KB</div>
+                    <div class="stat-bar"><div class="stat-fill" style="width: 100%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Compressed Size</div>
+                    <div class="stat-value" id="compressedSizeStat">0 KB</div>
+                    <div class="stat-bar"><div class="stat-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Compression Ratio</div>
+                    <div class="stat-value" id="compressionRatioStat">0%</div>
+                    <div class="stat-bar"><div class="stat-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Space Saved</div>
+                    <div class="stat-value" id="savedSizeStat">0 KB</div>
+                    <div class="stat-bar"><div class="stat-fill" style="width: 0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Dimensions</div>
+                    <div class="stat-value" id="dimensionsStat">0 × 0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Binary Size</div>
+                    <div class="stat-value" id="binarySizeStat">0 bits</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Binary Data Viewer -->
+        <div class="binary-section">
+            <div class="binary-header">
+                <h3>Binary Stream</h3>
+                <button class="copy-btn" onclick="copyBinaryData()">📋 Copy</button>
+            </div>
+            <div class="binary-viewer">
+                <div class="binary-stream" id="binaryStream">
+                    <span class="binary-placeholder">Binary data will appear here...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Animation -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-container">
+        <div class="loading-sphere"></div>
+        <div class="loading-text">Processing Image...</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Notifications -->
+<div class="notification" id="notification"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
